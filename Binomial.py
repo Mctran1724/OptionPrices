@@ -21,7 +21,7 @@ class BinomialModel(OptionModel):
         stock_prices = np.zeros(N+1)
 
         #maturity date stock and option prices
-        stock_prices = S*self._d**(np.arange(N, -1, -1)) * self._u**(np.arange(0, N+1, 1))
+        stock_prices = self._s*self._d**(np.arange(N, -1, -1)) * self._u**(np.arange(0, N+1, 1))
         option_prices[-1] = np.maximum(stock_prices - self._K, np.zeros(N+1))
         for i in range(N, 0, -1):
             new_row =  (p * option_prices[i, 1:i+1:] + q * option_prices[i, :i])/B
@@ -30,7 +30,7 @@ class BinomialModel(OptionModel):
         return option_prices
 
     def calculate(self):
-        return self.compute_tree[0,0]
+        return self.compute_tree()[0,0]
 
     def __init__(self, n: int = 1, *args, **kwargs):
         super().__init__(*args, **kwargs)
