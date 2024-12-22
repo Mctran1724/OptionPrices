@@ -26,36 +26,49 @@ class MonteCarloModel(OptionModel):
             result.append(self.time_step(result[i-1]))
         return np.array(result)
     
-    def option_values(self, path: np.ndarray) -> np.ndarray: #this is the payoff function
+    def payoffs(self, path: np.ndarray) -> np.ndarray: #this is the payoff function
         if self._is_call:
-            return np.max(path - self._K, 0)
+            return np.maximum(path - self._K, np.zeros((self._M, self._N)))
         else:
-            return np.max(self._K - path, 0)
+            return np.maximum(self._K - path, np.zeros((self._M, self._N)))
         
+    def simulate_stock_prices(self):
+        #We take the arithmetic mean of all the payoffs and discount them back 
+        #allocate the resulting array
+        result = np.zeros((self._M, self._N))
+        for i in range(self._M):
+            result[i] = self.path()    
+        return result
+
+    def simulate_option_payoffs(self):
+        #We take the arithmetic mean of all the payoffs and discount them back 
+        #allocate the resulting array
+        result = np.zeros((self._M, self._N))
+        for i in range(self._M):
+            result[i] = self.path()
+        
+        result = self.payoffs(result)
+        return result
+
+    def calculate(self):
+        option_payoffs = self.simulate_option_payoffs()
+        
+        C_0 = np.mean(option_payoffs) * np.exp(-self._r * self._T)        
+
+        return C_0
 
     
     
 
 if __name__=="__main__":
-    M = 100
+    M = 1000
     N = 10
-    S = 100
-    sigma = 0.2
-    r = 0.06
-    delta = 0.03
-    K = 100
-    T = 1
+    S = 101.15
+    sigma = 0.0991
+    r = 0.01
+    delta = 0
+    K = 98.01
+    T = 0.16438356
     model = MonteCarloModel(M, N, delta, S, K, r, T, sigma)
 
-    timesteps = np.linspace(0, T, N)
-    prices0 = model.path()
-
-    import matplotlib.pyplot as plt
-    plt.plot(timesteps, prices0)
-    plt.xlabel('Time')
-    plt.ylabel('Price')
-    plt.show()
-    
-
-
-            
+    print(model.calculate())
