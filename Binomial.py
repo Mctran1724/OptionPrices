@@ -1,12 +1,13 @@
 import numpy as np
 from Option import OptionModel
 
+"""
+The binomial model assumes the underlying can either go up by the up factor, u, or down by the down factor, d.
 
-
+"""
 
 
 class BinomialModel(OptionModel):
-
 
     def B(self) -> float:
         return np.exp(self._r * self._time_step)
