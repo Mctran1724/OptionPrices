@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.stats import norm
 from Option import OptionModel
-
+from profiler import profile
 class BlackScholesMertonModel(OptionModel):
 
     def __init__(self, *args, **kwargs):
@@ -9,6 +9,7 @@ class BlackScholesMertonModel(OptionModel):
 
         return
     
+    @profile
     def calculate(self) -> float:
         
         d1 = (np.log(self._s/self._K) + self._r + self._sigma**2/2)*self._T / (self._sigma*np.sqrt(self._T))

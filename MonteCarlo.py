@@ -1,17 +1,17 @@
 import numpy as np
 from scipy.stats import norm
 from Option import OptionModel
+from profiler import profile
 
 class MonteCarloModel(OptionModel):
 
-    def __init__(self, M: int, N: int, delta: float = 0,  *args, **kwargs):
+    def __init__(self, M: int, N: int,  *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._N = N #number of time steps
         self._M = M #number of trials
         self._dt = self._T/N
-        self._delta = delta
         
-        self._nu = (self._r - delta) - self._sigma**2/2
+        self._nu = self._r - self._sigma**2/2
         self._nudt = self._nu * self._dt #save having to recompute every iteration
         self._srdt = self._sigma*np.sqrt(self._dt) #save having to recompute every iteration
         return
@@ -50,11 +50,10 @@ class MonteCarloModel(OptionModel):
         result = self.payoffs(result)
         return result
 
+    @profile
     def calculate(self):
         option_payoffs = self.simulate_option_payoffs()
-        
         C_0 = np.mean(option_payoffs) * np.exp(-self._r * self._T)        
-
         return C_0
 
     

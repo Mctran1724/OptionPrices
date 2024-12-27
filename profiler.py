@@ -4,7 +4,7 @@ import psutil
 
  
 def elapsed_since(start):
-    return time.strftime("%H:%M:%S", time.gmtime(time.perf_counter() - start))
+    return time.perf_counter()-start
  
  
 def get_process_memory():
@@ -20,7 +20,7 @@ def profile(func):
         result = func(*args, **kwargs)
         elapsed_time = elapsed_since(start)
         mem_after = get_process_memory()
-        print(f"Calling {func.__name__}: Memory used {mem_after-mem_before} kB; Execution Time: {elapsed_time}")
+        print(f"Calling {func.__name__}: Memory used {mem_after-mem_before} kB; Execution Time: {elapsed_time} s")
         return result
     return wrapper
 
